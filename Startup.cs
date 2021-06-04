@@ -1,3 +1,4 @@
+using MessagePack;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,9 +27,15 @@ namespace StreamR
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddSignalR();
+            services.AddSignalR()
+                .AddMessagePackProtocol(options =>
+            {
+                options.SerializerOptions = MessagePackSerializerOptions.Standard
+                    .WithCompression(MessagePackCompression.None)
+                    .WithSecurity(MessagePackSecurity.TrustedData);
+            });
 
             services.AddSingleton<StreamManager>();
         }

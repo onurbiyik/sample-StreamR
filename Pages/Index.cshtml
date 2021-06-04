@@ -19,6 +19,8 @@ Stream name: <input type="textbox" id="streamName" value="" />
 <canvas id="myCanvas"></canvas>
 
 <script src="~/lib/signalr/signalr.js"></script>
+<script src="~/lib/msgpack/msgpack5.js"></script>
+<script src="~/lib/signalr/dist/browser/signalr-protocol-msgpack.js"></script>
 <script src="~/lib/ascii.js"></script>
 <script src="~/lib/camera.js"></script>
 
@@ -27,7 +29,8 @@ let connection;
 
 async function startAsync() {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl("/stream", { /*logMessageContent: true,*/ logger: signalR.LogLevel.Information })
+        .withUrl("/stream")
+        .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
         .build();
 
     let closed = false;
@@ -81,7 +84,7 @@ async function startAsync() {
         camera.init({
             width: 120,
             height: 90,
-            fps: 30,
+            fps: 1,
             mirror: true,
             targetCanvas: document.getElementById("myCanvas"),
 
